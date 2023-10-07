@@ -22,7 +22,7 @@ import java.time.format.DateTimeFormatter;
 public class SpringWebConfig implements WebMvcConfigurer {
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
 
-    @Value("${cors-policies}")
+    @Value("http://localhost:4200")
     private String[] corsPolicies;
     @Override
     public void addCorsMappings(CorsRegistry registry) {

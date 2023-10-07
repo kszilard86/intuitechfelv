@@ -24,4 +24,12 @@ public class ClientService {
 
         return savedClient;
     }
+
+    public boolean findApiKey(String apiKey) {
+        if (clientRepository.findById(apiKey).isPresent()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
