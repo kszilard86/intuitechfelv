@@ -3,7 +3,8 @@ package com.example.feladat.controller;
 import com.example.feladat.domain.Client;
 import com.example.feladat.dto.incoming.ClientCommand;
 import com.example.feladat.service.ClientService;
-import com.example.feladat.validator.ClientValidator;
+import com.example.feladat.validator.ClientEmailValidator;
+import com.example.feladat.validator.ClientNameValidator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,22 +21,34 @@ public class ClientController {
 
     private final ClientService clientService;
 
-    private final ClientValidator clientValidator;
+    private final ClientNameValidator clientNameValidator;
 
+    private final ClientEmailValidator clientEmailValidator;
 
     @Autowired
-    public ClientController(ClientService clientService, ClientValidator clientValidator) {
+    public ClientController(ClientService clientService, ClientNameValidator clientNameValidator, ClientEmailValidator clientEmailValidator) {
         this.clientService = clientService;
-        this.clientValidator = clientValidator;
+        this.clientNameValidator = clientNameValidator;
+        this.clientEmailValidator = clientEmailValidator;
     }
 
-    @InitBinder("clientCommand")
-    public void initBinderClientCommand(WebDataBinder binder) {
-        binder.addValidators(clientValidator);
+    @InitBinder("clientName")
+    public void initBinderClientName(WebDataBinder binder) {
+        binder.addValidators(clientNameValidator);
+    }
+
+    @InitBinder("clientEmail")
+    public void initBinderClientEmail(WebDataBinder binder) {
+        binder.addValidators(clientEmailValidator);
     }
 
     @PostMapping
-    public ResponseEntity<UUID> createUser(@RequestBody @Valid ClientCommand clientCommand) throws NoSuchAlgorithmException {
+    public ResponseEntity<UUID> createUser(@RequestParam @Valid String clientName, @RequestParam @Valid String clientEmail) throws NoSuchAlgorithmException {
+
+        ClientCommand clientCommand = new ClientCommand();
+        clientCommand.setName(clientName);
+        clientCommand.setEmail(clientEmail);
+
         Client client = clientService.saveClient(clientCommand);
         return ResponseEntity.status(HttpStatus.CREATED).body(client.getId());
     }
