@@ -13,6 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/positions")
 public class PositionController {
@@ -65,5 +68,22 @@ public class PositionController {
 
     private boolean isValidApiKey(String apiKey) {
         return clientService.findApiKey(apiKey);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Position>> searchPositions(
+            @RequestHeader("apiKey") String apiKey,
+            @RequestParam @Valid String keyword,
+            @RequestParam @Valid String location) {
+        if (isValidApiKey(apiKey)) {
+
+            List<Position> positionList = positionService.searchPositions(keyword, location);
+
+            return ResponseEntity.status(HttpStatus.OK).body(positionList);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body((List<Position>) Collections.singletonMap("error", "Invalid API key"));
+        }
+
     }
 }
